@@ -1,3 +1,7 @@
+val testSparkVersion = settingKey[String]("Spark version to test against")
+
+val testHadoopVersion = settingKey[String]("Hadoop version to test against")
+
 name := "spark-avro"
 
 version := "1.1.0-SNAPSHOT"
@@ -15,6 +19,8 @@ sparkVersion := "1.4.1"
 spAppendScalaVersion := true
 
 spIncludeMaven := true
+
+spIgnoreProvided := true
 
 sparkComponents := Seq("sql")
 
@@ -59,8 +65,6 @@ pomExtra :=
     </developer>
   </developers>
 
-
-
 libraryDependencies += "commons-io" % "commons-io" % "2.4" % "test"
 
 ScoverageSbtPlugin.ScoverageKeys.coverageHighlighting := {
@@ -70,3 +74,15 @@ ScoverageSbtPlugin.ScoverageKeys.coverageHighlighting := {
 
 EclipseKeys.eclipseOutput := Some("target/eclipse")
 
+resolvers += "Spark 1.5.0 RC2 Staging" at "https://repository.apache.org/content/repositories/orgapachespark-1141"
+
+testSparkVersion := sys.props.get("spark.testVersion").getOrElse(sparkVersion.value)
+
+testHadoopVersion := sys.props.get("hadoop.testVersion").getOrElse("2.2.0")
+
+libraryDependencies ++= Seq(
+  "org.apache.hadoop" % "hadoop-client" % testHadoopVersion.value % "test",
+  "org.apache.spark" %% "spark-core" % testSparkVersion.value % "test" exclude("org.apache.hadoop", "hadoop-client"),
+  "org.apache.spark" %% "spark-sql" % testSparkVersion.value % "test" exclude("org.apache.hadoop", "hadoop-client"),
+  "org.apache.spark" %% "spark-hive" % testSparkVersion.value % "test" exclude("org.apache.hadoop", "hadoop-client")
+)

@@ -1,7 +1,5 @@
 name := "spark-avro"
 
-version := "1.1.0-SNAPSHOT"
-
 organization := "com.databricks"
 
 scalaVersion := "2.10.5"
@@ -40,14 +38,6 @@ libraryDependencies ++= Seq(
 
 publishMavenStyle := true
 
-publishTo := {
-  val nexus = "https://oss.sonatype.org/"
-  if (version.value.endsWith("SNAPSHOT"))
-    Some("snapshots" at nexus + "content/repositories/snapshots")
-  else
-    Some("releases"  at nexus + "service/local/staging/deploy/maven2")
-}
-
 pomExtra :=
   <url>https://github.com/databricks/spark-avro</url>
   <licenses>
@@ -74,12 +64,7 @@ pomExtra :=
     </developer>
   </developers>
 
-ScoverageSbtPlugin.ScoverageKeys.coverageHighlighting := {
-  if (scalaBinaryVersion.value == "2.10") false
-  else true
-}
-
-EclipseKeys.eclipseOutput := Some("target/eclipse")
-
 // Display full-length stacktraces from ScalaTest:
 testOptions in Test += Tests.Argument("-oF")
+
+bintrayReleaseOnPublish in ThisBuild := false
